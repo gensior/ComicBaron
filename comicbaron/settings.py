@@ -1,4 +1,6 @@
 # Django settings for comicbaron project.
+import os
+DIRNAME = os.path.dirname(__file__)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
