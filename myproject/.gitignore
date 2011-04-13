@@ -1,0 +1,7 @@
+*~
+*.pyc
+docs/_build/*
+uploads
+comicbaron/conf/local/*.py
+dev.db
+comicbaron.egg-info
