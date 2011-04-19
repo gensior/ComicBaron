@@ -1,11 +1,9 @@
 by Jesse Franceschini
 
-ComicBaron is a comic management system for authors and readers.
-It makes organizing comics easier for the creator and reading comics easier
+ComicBaron is a comic management system for authors and readers. It makes organizing comics easier for the creator and reading comics easier
 for the adoring fan.
 
-The heart of ComicBaron consists of pages, these are what the authors upload
-to the system. Each page consists of the following information:
+The heart of ComicBaron consists of pages, these are what the authors upload to the system. Each page consists of the following information:
 (* = required)
 - image filename *
 - insert date *
@@ -19,46 +17,27 @@ to the system. Each page consists of the following information:
 - child id
 - active boolean * (default is true)
 
-The image files themselves are stored on Amazon's S3 service for
-persistence and to minimize storage space requirements.
-Pages are organized into groups, with one page serving as the cover.
-Covers have child ids in their meta information.
-So far, pages and be organized into an infinite number of groups and
-sub-groups. We'll see how that goes.
-A page can only belong to one cover. A cover can have several pages.
+The image files themselves are stored on Amazon's S3 service for persistence and to minimize storage space requirements. Pages are organized into groups, with one page serving as the cover. Covers have child ids in their meta information. So far, pages and be organized into an infinite number of groups and sub-groups. We'll see how that goes. A page can only belong to one cover. A cover can have several pages.
 
-Initially, the Django admin will be the only way that users can
-upload, edit, and remove their pages.
-Hopefully this will change once the framework is running.
+Initially, the Django admin will be the only way that users can upload, edit, and remove their pages. Hopefully this will change once the framework is running.
 
-Users and readers can read the pages via the site frontend. It will be
-ugly at first.
-Hopefully that will also change once the framework is running. :/
+Users and readers can read the pages via the site frontend. It will be ugly at first. Hopefully that will also change once the framework is running. :/
 
-When a user account is created, a subdomain points to their profile.
-For example, if the user "baron" creates his account, then he can navigate to:
+When a user account is created, a subdomain points to their profile. For example, if the user "baron" creates his account, then he can navigate to:
 baron.comicbaron.com
-to access his profile.
-For now, profiles only consist of a listing of all pages uploaded by a user.
+to access his profile. For now, profiles only consist of a listing of all pages uploaded by a user.
 
 ==URL Structure==
 [username].comicbaron.com/ --> lists all published pages and covers
 [username].comibaron.com/[randomstring]/ --> views specific page or cover
-comicbaron.com/[randomstring]/ --> views specific page or cover, but
-redirects to url above
+comicbaron.com/[randomstring]/ --> views specific page or cover, but redirects to url above
 [username].comicbaron.com/[randomstring]/add --> add a page to the group
-[username].comicbaron.com/sequence --> reorder pages and cover in the
-profile view
-[username].comicbaron.com/[randomstrong]/sequence --> reorder pages
-and covers within specified group
- - if the url points to a page without anything to reorder, it
-redirects to the page view
+[username].comicbaron.com/sequence --> reorder pages and cover in the profile view
+[username].comicbaron.com/[randomstrong]/sequence --> reorder pages and covers within specified group
+ - if the url points to a page without anything to reorder, it redirects to the page view
 
-Users are very limited in what they can do right now. They can only
-manage pages.
-Users and readers cannot rate pages, save favorites, or do anything
-social. That's not the point of the app.
-Comments will not exist and probably never will. They are stupid.
+Users are very limited in what they can do right now. They can only manage pages. Users and readers cannot rate pages, save favorites, or do anything
+social. That's not the point of the app. Comments will not exist and probably never will. They are stupid.
 
 Users can:
 1) Upload Pages
@@ -67,14 +46,10 @@ Users can:
 4) Delete their Pages
 
 ==Upload Process==
-To upload a page, the user navigates to the section that they want to
-upload the page to.
-When a user creates a page, they chose the file and fill in the
-relevant information in the form field.
-The Django backend loads the file to a temporary local storage
-location, renaming it with a random string.
-The Imagekit library creates a few varying filesizes, which are yet to
-be determined.
+To upload a page, the user navigates to the section that they want to upload the page to.
+When a user creates a page, they chose the file and fill in the relevant information in the form field.
+The Django backend loads the file to a temporary local storage location, renaming it with a random string.
+The Imagekit library creates a few varying filesizes, which are yet to be determined.
 The boto library uploads the various temporary files to S3.
 The Django backend removes the temporary files upon successful upload to S3.
 The form redirects to the uploaded page. (maybe?)
@@ -85,19 +60,15 @@ Size limit on images
 - Can original file sizes be kept and viewed?
 Zip/tar/gzip directories of images
 - Can users upload a single file consisting of a series of images?
-    - If so, default meta information would be created during the automated
-upload process.
+    - If so, default meta information would be created during the automated upload process.
 
 ==Download Process==
-Users can download all or a subset of their pages from the site in the form
-of a zipped file.
+Users can download all or a subset of their pages from the site in the form of a zipped file.
 - What file size is downloaded if there are several to chose from?
     - Ideally the original and nothing else.
     - Maybe filesize selection is an option in the download process.
 
 ==Editing Process==
-Editing pages consists of changing the title, caption, notes, and files
-associated with a page.
-Users can also change the order of pages, or move them into and out of
-groups.
+Editing pages consists of changing the title, caption, notes, and files associated with a page.
+Users can also change the order of pages, or move them into and out of groups.
 
