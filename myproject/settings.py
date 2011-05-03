@@ -51,6 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+	'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'myproject.urls'
@@ -75,6 +76,7 @@ INSTALLED_APPS = (
 	'south',
 	'imager',
 	'imagekit',
+	'debug_toolbar',
 )
 
 # A sample logging configuration. The only tangible logging
