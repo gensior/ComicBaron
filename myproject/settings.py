@@ -102,4 +102,8 @@ LOGGING = {
     }
 }
 
+DEBUG_TOOLBAR_CONFIG = {
+	'INTERCEPT_REDIRECTS': False,
+}
+
 from settings_local import *
