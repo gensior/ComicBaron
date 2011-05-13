@@ -1,3 +1,6 @@
 *.pyc
 *.sqlite
 settings_local.py
+/myproject/media/
+/myproject/static/
+/myproject/imager/migrations
