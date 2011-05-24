@@ -6,16 +6,18 @@ from boto.s3.key import Key
 from myproject.settings_local import AWS_ACCESS_KEY_ID as AWSKEY, AWS_SECRET_ACCESS_KEY as AWSSECRET, BASE_DIR
 import random, string
 import s3storage
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_init, pre_save
 from django.dispatch import receiver
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^imager\.s3storage\.S3EnabledImageField"])
 
 import uuid
-def get_file_path(instance, filename):
-	filename = '%s' % (uuid.uuid4())
-	return os.path.join('images', filename)
+def get_file_path(instance, filename, **kwargs):
+	filefolder = '%s' % (uuid.uuid4())
+	filename = kwargs.get('addendum','original')
+	print os.path.join('images', filefolder, filename)
+	return os.path.join('images', filefolder, filename)
 	
 class Image(models.Model):
 	image_file = s3storage.S3EnabledImageField(upload_to=get_file_path)
@@ -41,10 +43,19 @@ class Image(models.Model):
 	
 	def __unicode__(self):
 		return self.image_file.name
-	
+
+@receiver(post_save, sender=Image)
+def tweak_imagesavepath(sender, instance, **kwargs):
+	Alternates.objects.get_or_create(image=instance, limiter=instance.limiter())
+
 class Alternates(models.Model):
 	image = models.ForeignKey(Image)
 	limiter = models.IntegerField()
+	width = models.IntegerField()
+	height = models.IntegerField()
+	
+	def __unicode__(self):
+		return u'%s %s' % (self.image.image_file.name, self.limiter)
 
 class Page(models.Model):
 	title = models.CharField(max_length=100)
@@ -84,6 +95,6 @@ class Page(models.Model):
 @receiver(post_save, sender=Page)
 def tweak_imagefilename(sender, instance, **kwargs):
 	post_save.disconnect(tweak_imagefilename, sender=Page)
-	instance.filename = instance.picture.image_file.name.split('/')[-1]
+	instance.filename = instance.picture.image_file.name.split('/')[-2]
 	instance.save()
 	post_save.connect(tweak_imagefilename, sender=Page)
