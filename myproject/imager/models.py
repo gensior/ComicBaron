@@ -3,10 +3,10 @@ import os
 from imagekit.models import ImageModel
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
-from myproject.settings_local import AWS_ACCESS_KEY_ID as AWSKEY, AWS_SECRET_ACCESS_KEY as AWSSECRET, BASE_DIR
+from myproject import settings
 import random, string
 import s3storage
-from django.db.models.signals import post_save, post_init, pre_save
+from django.db.models.signals import post_save, post_init, pre_save, pre_delete
 from django.dispatch import receiver
 
 from south.modelsinspector import add_introspection_rules
@@ -31,11 +31,7 @@ class Image(models.Model):
 			return self.width
 		else:
 			return self.height
-	
-	def delete(self):
-		self.image_file.storage.delete(self.image_file.name)
-		super(Image, self).delete()
-	
+			
 	def save(self, force_insert=False, force_update=False):
 		self.height = self.image_file.height
 		self.width = self.image_file.width
@@ -46,7 +42,7 @@ class Image(models.Model):
 
 @receiver(post_save, sender=Image)
 def tweak_imagesavepath(sender, instance, **kwargs):
-	Alternates.objects.get_or_create(image=instance, limiter=instance.limiter())
+	Alternates.objects.get_or_create(image=instance, limiter=instance.limiter(), width=instance.width, height=instance.height)
 
 class Alternates(models.Model):
 	image = models.ForeignKey(Image)
@@ -68,14 +64,9 @@ class Page(models.Model):
 		return u'%s <%s>' % (self.title, self.filename)
 	
 	def admin_thumbnail(self):
-		return u'<img src="http://127.0.0.1:8000/image/%s/200" />' % (self.filename)
+		return u'<img src="http://127.0.0.1:8000/image/%s/300" />' % (self.filename)
 	admin_thumbnail.short_description = 'Thumbnail'
 	admin_thumbnail.allow_tags = True
-	
-	def delete(self):
-		picture = Image.objects.get(id=self.picture.id)
-		picture.delete()
-		super(Page, self).delete()
 	
 	"""def save(self, force_insert=False, force_update=False):
 		self.image_file.name
@@ -91,6 +82,12 @@ class Page(models.Model):
 		cache_dir = 'images'
 		image_field = 'image_file'
 		save_count_as = 'num_views'"""
+
+@receiver(pre_delete, sender=Page)
+def remove_imagefile(sender, instance, **kwargs):
+    conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    bucket = conn.get_bucket(settings.DEFAULT_BUCKET)
+    bucket.delete_key('images/'+instance.filename)
 
 @receiver(post_save, sender=Page)
 def tweak_imagefilename(sender, instance, **kwargs):
