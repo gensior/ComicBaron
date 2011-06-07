@@ -8,6 +8,7 @@ import random, string
 import s3storage
 from django.db.models.signals import post_save, post_init, pre_save, pre_delete
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^imager\.s3storage\.S3EnabledImageField"])
@@ -54,6 +55,7 @@ class Alternates(models.Model):
 		return u'%s %s' % (self.image.image_file.name, self.limiter)
 
 class Page(models.Model):
+	author = models.ForeignKey(User, unique=True)
 	title = models.CharField(max_length=100)
 	filename = models.CharField(max_length=100, editable=False)
 	picture = models.OneToOneField(Image, related_name='page')

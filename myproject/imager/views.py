@@ -6,6 +6,11 @@ from boto.s3.key import Key
 from myproject import settings
 import os
 
+def index(request):
+	if request.subdomain:
+		print request.subdomain
+	return HttpResponse(request.subdomain)
+
 def serveimage(request, imagefile, resolution=0):
 	### can the image file be found?
 	original = 0

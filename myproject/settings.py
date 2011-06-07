@@ -52,6 +52,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 	'debug_toolbar.middleware.DebugToolbarMiddleware',
+	'myproject.middleware.SubdomainMiddleware',
 )
 
 ROOT_URLCONF = 'myproject.urls'
@@ -77,6 +78,7 @@ INSTALLED_APPS = (
 	'imager',
 	'imagekit',
 	'debug_toolbar',
+	'registration',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -105,5 +107,7 @@ LOGGING = {
 DEBUG_TOOLBAR_CONFIG = {
 	'INTERCEPT_REDIRECTS': False,
 }
+
+ACCOUNT_ACTIVATION_DAYS = 7
 
 from settings_local import *
