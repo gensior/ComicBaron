@@ -1,0 +1,4 @@
+<h1>{{ page.title }}</h1>
+<p>Published: {{ page.publish_by|date:"SHORT_DATE_FORMAT" }}</p>
+<img title="{{ page.caption }}" src="http://127.0.0.1:8000/image/{{ page.filename }}/800" /><br />
+<p>{{ page.notes }}</p>

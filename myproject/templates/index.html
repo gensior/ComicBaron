@@ -1,0 +1,12 @@
+{% if user %}
+<h1>{{ user.username }}'s Pages</h1>
+{% else %}
+<h1>Latest Pages</h1>
+{% endif %}
+{% if pages %}
+	{% for page in pages %}
+		<a href="page/{{ page.id }}"><img title="{{ page.title }}" src="http://127.0.0.1:8000/image/{{ page.filename }}/150" /></a>
+	{% endfor %}
+{% else %}
+<h2>No pages by this user.</h2>
+{% endif %}

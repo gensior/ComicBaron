@@ -16,4 +16,5 @@ urlpatterns = patterns('',
    	url(r'^admin/', include(admin.site.urls)),
 	(r'^image/', include('imager.urls')),
 	url(r'^$', 'myproject.imager.views.index', name='index'),
+	url(r'^page/(?P<page>\d+)', 'myproject.imager.views.read', name='read'),
 )

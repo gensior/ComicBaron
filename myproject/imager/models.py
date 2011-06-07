@@ -9,6 +9,7 @@ import s3storage
 from django.db.models.signals import post_save, post_init, pre_save, pre_delete
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from datetime import datetime
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^imager\.s3storage\.S3EnabledImageField"])
@@ -55,20 +56,31 @@ class Alternates(models.Model):
 		return u'%s %s' % (self.image.image_file.name, self.limiter)
 
 class Page(models.Model):
-	author = models.ForeignKey(User, unique=True)
+	author = models.ForeignKey(User)
 	title = models.CharField(max_length=100)
 	filename = models.CharField(max_length=100, editable=False)
 	picture = models.OneToOneField(Image, related_name='page')
 	num_views = models.PositiveIntegerField(editable=False, default=0)
 	published = models.BooleanField(default=True)
+	parent = models.ForeignKey('self', blank=True, null=True)
+	sequence = models.PositiveIntegerField()
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+	publish_by = models.DateTimeField(default=datetime.now)
+	active = models.BooleanField(default=True)
+	caption = models.CharField(max_length=255, blank=True)
+	notes = models.TextField(max_length=10000, blank=True)
 	
 	def __unicode__(self):
 		return u'%s <%s>' % (self.title, self.filename)
 	
 	def admin_thumbnail(self):
-		return u'<img src="http://127.0.0.1:8000/image/%s/300" />' % (self.filename)
+		return u'<img src="http://127.0.0.1:8000/image/%s/150" />' % (self.filename)
 	admin_thumbnail.short_description = 'Thumbnail'
 	admin_thumbnail.allow_tags = True
+
+	def children(self):
+		return self.objects.filter(parent=self.pk)
 	
 	"""def save(self, force_insert=False, force_update=False):
 		self.image_file.name
